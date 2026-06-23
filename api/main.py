@@ -1,8 +1,11 @@
 import uvicorn
 from fastapi import FastAPI
+from sqlalchemy import select
 from model import Message
 from typing import List
+from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi.middleware.cors import CORSMiddleware
+from db import create_db_and_tables, get_async_session, Logs
 import uuid
 
 app = FastAPI()
@@ -19,8 +22,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-logs = []
 
 
 @app.get("/logs")

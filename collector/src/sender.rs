@@ -33,7 +33,7 @@ pub fn start_sender(rx: Receiver<LogMessage>) {
             !buffer.is_empty()
             && (
                 buffer.len() >= batch_size
-                || last_flush.elapsed().as_secs() >= 2
+                || last_flush.elapsed().as_secs() >= 1
             );
 
         if should_flush {
