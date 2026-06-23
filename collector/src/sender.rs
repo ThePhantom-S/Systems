@@ -10,7 +10,7 @@ pub fn start_sender(rx: Receiver<LogMessage>) {
 
     let mut buffer: Vec<LogMessage> = Vec::new();
 
-    let batch_size = 20000;
+    let batch_size = 1000;
     let mut last_flush = Instant::now();
 
     loop {

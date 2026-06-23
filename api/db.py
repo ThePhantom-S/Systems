@@ -12,10 +12,9 @@ class Base(DeclarativeBase):
     pass
 
 class Logs(Base):
-    __tablename__ = "fruits"
+    __tablename__ = "Logs"
     id = Column(Integer, primary_key=True, index=True)
     log = Column(String, index=True)
-    date = Column(Float, index=True)
 
 async def create_db_and_tables():
     async with async_engine.begin() as conn:

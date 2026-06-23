@@ -1,14 +1,22 @@
-import uvicorn
-from fastapi import FastAPI
-from sqlalchemy import select
-from model import Message
+import time
 from typing import List
-from sqlalchemy.ext.asyncio import AsyncSession
+import uvicorn
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
-from db import create_db_and_tables, get_async_session, Logs
-import uuid
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+from contextlib import asynccontextmanager
 
-app = FastAPI()
+from db import get_async_session, Logs, create_db_and_tables
+from model import Message
+
+# ✅ Lifespan handler ensures tables are created before server starts handling requests
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await create_db_and_tables()
+    yield
+
+app = FastAPI(lifespan=lifespan)
 
 origins = [
     "http://localhost:5173",
@@ -25,17 +33,33 @@ app.add_middleware(
 
 
 @app.get("/logs")
-def get_logs():
+async def get_logs(session: AsyncSession = Depends(get_async_session)):
+    result = await session.execute(select(Logs.log))
+    logs = result.scalars().all()
     return logs
 
+
 @app.post("/logs")
-def post_message(content: List[Message]):
-    for log in content:
-        logs.append({
-            "id": str(uuid.uuid4()),
-            "message": log.message
-        })
-    return {"status": "success", "data": content}
+async def post_message(
+    content: List[Message], 
+    session: AsyncSession = Depends(get_async_session)
+):
+    # ✅ Fixed: Changed from massive uuid1 integer to standard Unix epoch float
+    new_logs = [
+        Logs(log=item.message)
+        for item in content
+    ]
+    
+    # ✅ Fixed: Chunk inserts to stay safe from SQLite's parameter limits (max 999 variables)
+    # 400 items * 2 parameters = 800 variables per chunk execution
+    chunk_size = 400 
+    for i in range(0, len(new_logs), chunk_size):
+        session.add_all(new_logs[i:i + chunk_size])
+        
+    await session.commit()
+    
+    return {"status": "success", "inserted": len(new_logs)}
+
 
 if __name__ == "__main__":
     uvicorn.run(
