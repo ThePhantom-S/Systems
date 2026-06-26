@@ -1,3 +1,4 @@
+//Log ingestion pipeline
 mod model;
 mod reader;
 mod sender;
