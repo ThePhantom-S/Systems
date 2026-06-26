@@ -1,4 +1,4 @@
-# Log Analyzer 🚀
+# Log Analyzer 
 
 A high-performance, real-time log ingestion, processing, and visualization system. The project features a resilient Rust-based log collector, an asynchronous FastAPI backend backed by SQLite, and a modern, high-fidelity React dashboard for live log visualization and filtering.
 
