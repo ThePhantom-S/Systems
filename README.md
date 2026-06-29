@@ -8,15 +8,7 @@ A high-performance, real-time log ingestion, processing, and visualization syste
 
 The application is built using a multi-service architecture designed for high throughput, minimal overhead, and system resilience:
 
-```mermaid
-graph TD
-    A[Log Source / app.log] -->|Real-time Tail| B(Rust Log Collector)
-    B -->|Batch MPSC Channel| C[Buffer & Sender Thread]
-    C -->|HTTP POST JSON Batch| D[FastAPI Backend Server]
-    D -->|Async SQLite Write| E[(sqlite + aiosqlite)]
-    F[React Frontend Client] -->|HTTP GET Poll /logs| D
-    G[logs.sh Bash Script] -->|Write Event Logs| A
-```
+![System Architecture Diagram] (Architecture_Diagram.png)
 
 1. **Log Simulation (`logs.sh`)**: A utility shell script that generates simulated, timestamped log messages and appends them to a target log file (`app.log`).
 2. **Log Collector (Rust)**:
