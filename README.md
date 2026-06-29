@@ -8,7 +8,7 @@ A high-performance, real-time log ingestion, processing, and visualization syste
 
 The application is built using a multi-service architecture designed for high throughput, minimal overhead, and system resilience:
 
-![System Architecture Diagram] (Architecture_Diagram.png)
+![System Architecture Diagram](Architecture_Diagram.png)
 
 1. **Log Simulation (`logs.sh`)**: A utility shell script that generates simulated, timestamped log messages and appends them to a target log file (`app.log`).
 2. **Log Collector (Rust)**:
